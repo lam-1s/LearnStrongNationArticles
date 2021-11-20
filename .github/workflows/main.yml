@@ -63,7 +63,7 @@ jobs:
         run: echo $GPG_PRIVATE_KEY | base64 -d | gpg --import
         
       - name: GPG Sign the Release
-        run: gpg -u 356434255004FABE -b `cat Work/tag.txt`.tar.xz
+        run: gpg -u 356434255004FABE -b release-`cat Work/tag.txt`.tar.xz
         
       - name: Create Release
         env:
