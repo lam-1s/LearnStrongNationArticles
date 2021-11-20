@@ -1,0 +1,76 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Update Articles
+
+# Controls when the workflow will run
+on:
+  schedule:
+  - cron: "15 1,13 * * *"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  fetch:
+    name: "Fetch the most recent articles"
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - name: Setup Go environment
+        uses: actions/setup-go@v2.1.4
+        with:
+          go-version: 1.17.3
+
+      - name: Check go version
+        run: go version && which go
+        
+      - name: Check Connectivity to Target
+        run: curl -sv https://xuexi.cn/
+        
+      - name: Clone Spider
+        env:
+          REPO_URL: ${{ secrets.REPO_URL }}
+          BRANCH_NAME: ${{ secrets.BRANCH_NAME }}
+        run: git clone -b $BRANCH_NAME $REPO_URL &> /dev/null
+        
+      - name: Build Spider
+        env:
+          PROGRAM_NAME: ${{ secrets.PROGRAM_NAME }}
+        run: cd $PROGRAM_NAME && go build && mv $PROGRAM_NAME ../WORKER
+        
+      - name: Download Previous Release
+        run: python3 ./fetch_release.py
+      
+      - name: Unzip Previous Release
+        run: mkdir Work && cd Work && tar xf ../release.tar.xz
+        
+      - name: Fetch Articles
+        run: cd Work && ../WORKER
+        
+      - name: Compress Articles
+        run: cd Work && tar cJf ../release-`cat tag.txt`.tar.xz lastUpdated.json txt
+        
+      - name: Import GPG Key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: echo $GPG_PRIVATE_KEY | base64 -d | gpg --import
+        
+      - name: GPG Sign the Release
+        run: gpg -u 356434255004FABE -b `cat Work/tag.txt`.tar.xz
+        
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -xe
+          NAME="$(cat Work/summary.txt)"
+          TAGNAME="v$(cat Work/tag.txt)"
+          hub release create -a *.tar.xz -a *.sig -m "$NAME" -t "master" "$TAGNAME"
+          echo "::set-output name=tag_name::${TAGNAME}"
