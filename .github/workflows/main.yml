@@ -49,7 +49,7 @@ jobs:
         run: python3 ./fetch_release.py
       
       - name: Unzip Previous Release
-        run: mkdir Work && cd Work && tar xf ../release.tar.xz
+        run: mkdir Work && cd Work && tar xf ../release.tar.xz && rm ../release.tar.xz
         
       - name: Fetch Articles
         run: cd Work && ../WORKER
