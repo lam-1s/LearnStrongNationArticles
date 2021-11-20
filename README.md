@@ -24,6 +24,18 @@ When the archive file was decompressed, you will see files were structured as be
 
 Articles on [学习强国](https://xuexi.cn/) were categorised into different "channels", where "channels" could have some sub-"channels". We preserved such a tree-like structure since the name of the channel is strongly related to the content of articles. 
 
+### Integrity check
+
+You may want to check the integrity of the downloaded archive to ensure that nobody other than us modified the file. Luckily, our files are GPG signed. You can do the verification yourself. Our GPG key id is 356434255004FABE, you can retrieve it on [OpenPGP Key Server](https://keys.openpgp.org/).
+
+```
+$ gpg --verify XXX.sig
+gpg: assuming signed data in 'XXX'
+gpg: Signature made Sun 21 Nov 2021 00:00:00 UTC
+gpg:                using ECDSA key DD98ED60A11780F091010407356434255004FABE
+gpg: Good signature from "LearnStrongNation Bot (Release Signing Only) <qamp99asj@mozmail.com>" [full]
+```
+
 ## How are these articles updated?
 
 The articles are updated at 01:15 and 13:15 (UTC) everyday.
