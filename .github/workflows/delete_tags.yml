@@ -6,12 +6,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  fetch:
-    name: "Fetch the most recent articles"
+  trim:
+    name: "Delete old tags"
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
       
       - name: Delete Old Tags
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: bash ./delete_tags.sh
