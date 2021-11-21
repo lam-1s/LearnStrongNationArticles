@@ -8,8 +8,9 @@ if __name__ == '__main__':
     releases = json.loads(resp.text)
     dlUrl = ""
     for i in releases[0]["assets"]:
-        if i["browser_download_url"].find(".tar.xz") != -1:
+        if i["browser_download_url"].find(".tar.xz") != -1 and i["browser_download_url"].find(".sig") == -1:
             dlUrl = i["browser_download_url"]
+            break
 
     print("Fetched latest release:")
     print(dlUrl)
