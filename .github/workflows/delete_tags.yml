@@ -1,0 +1,17 @@
+name: Delete Old Releases
+
+on:
+  schedule:
+  - cron: "45 23 1 * *"
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    name: "Fetch the most recent articles"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Delete Old Tags
+        run: bash ./delete_tags.sh
