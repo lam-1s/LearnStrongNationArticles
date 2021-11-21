@@ -1,0 +1,55 @@
+name: Trim Articles
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trim:
+    name: "Delete Short or Empty Articles"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Go environment
+        uses: actions/setup-go@v2.1.4
+        with:
+          go-version: 1.17.3
+
+      - name: Check go version
+        run: go version && which go
+
+      - name: Build Cleanner
+        env:
+          PROGRAM_NAME: ${{ secrets.PROGRAM_NAME }}
+        run: go build trim.go
+        
+      - name: Download Previous Release
+        run: python3 ./fetch_release.py
+      
+      - name: Unzip Previous Release
+        run: mkdir Work && cd Work && tar xf ../release.tar.xz && rm ../release.tar.xz
+        
+      - name: Do Trimming
+        run: cd Work && ../trim
+        
+      - name: Compress Articles
+        run: cd Work && tar cJf ../release-`date +'%y%m%d-%H'`.tar.xz lastUpdated.json txt
+        
+      - name: Import GPG Key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: echo $GPG_PRIVATE_KEY | base64 -d | gpg --import
+        
+      - name: GPG Sign the Release
+        run: gpg -u 356434255004FABE -b release-`date +'%y%m%d-%H'`.tar.xz
+        
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -xe
+          NAME="Version $(date +'%y%m%d-%H')\nTrimmed unwanted articles"
+          TAGNAME="v$(date +'%y%m%d-%H')"
+          hub release create -a *.tar.xz -a *.sig -m "$NAME" -t "master" "$TAGNAME"
+          echo "::set-output name=tag_name::${TAGNAME}"
