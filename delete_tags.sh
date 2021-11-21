@@ -3,7 +3,7 @@ set -e
 git fetch --tags
 TAGS=( $(git tag -l "*" | sort -r) )
 
-KEEP_LATEST=1
+KEEP_LATEST=50
 
 LATEST_TAGS=()
 
