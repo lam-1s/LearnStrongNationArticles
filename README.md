@@ -2,6 +2,8 @@
 
 Articles from xuexi.cn / 学习强国文章库
 
+Auto build status: [![Update Articles](https://github.com/lam-1s/LearnStrongNationArticles/actions/workflows/main.yml/badge.svg)](https://github.com/lam-1s/LearnStrongNationArticles/actions/workflows/main.yml)
+
 ## What is this?
 
 This is a project which automatically fetch newly-published articles on [学习强国](https://xuexi.cn/).
