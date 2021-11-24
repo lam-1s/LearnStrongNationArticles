@@ -5,7 +5,7 @@ name: Update Articles
 # Controls when the workflow will run
 on:
   schedule:
-  - cron: "15 1,13 * * *"
+  - cron: "15 1,13 * * 1-6"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -58,7 +58,7 @@ jobs:
         run: go build trim.go
       
       - name: Do Trimming
-        run: cd Work && ../trim
+        run: cd Work/txt && ../../trim
       
       - name: Compress Articles
         run: cd Work && tar cJf ../release-`cat tag.txt`.tar.xz lastUpdated.json txt
