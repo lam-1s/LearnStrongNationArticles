@@ -69,7 +69,13 @@ func main() {
 		data, _ := ioutil.ReadAll(thisFile)
 		originalSize := len(data)
 		dataStr := string(data)
-		data = []byte(strings.ReplaceAll(dataStr, "&nbsp;", ""))
+		dataStr = strings.ReplaceAll(dataStr, "&nbsp;", "")
+		dataStr = strings.ReplaceAll(dataStr, "\t", "")
+		dataStr = strings.ReplaceAll(dataStr, "\v", "")
+		for strings.Index(dataStr, "  ") != -1{
+			dataStr = strings.ReplaceAll(dataStr, "  ", " ")
+		}
+		data = []byte(dataStr)
 		trimmedSize := len(data)
 		if trimmedSize == originalSize {
 			return nil
