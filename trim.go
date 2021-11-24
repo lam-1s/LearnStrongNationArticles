@@ -9,7 +9,38 @@ import (
 	"strings"
 )
 
+func dfs(path string) (ret uint) {
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		fmt.Println(path)
+		return 0xFFFFFFFF
+	}
+
+	for _, f := range files {
+		if !f.IsDir() {
+			if f.Size() > 0 {
+				ret++
+			}
+			continue
+		}
+		subDir := dfs(path + "/" + f.Name())
+		if subDir == 0 {
+			fileName := path + "/" + f.Name()
+			err = os.Remove(fileName)
+			if err != nil {
+				fmt.Printf("[ERROR] %s\n", err.Error())
+				continue
+			}
+			fmt.Printf("[ DIR ] Removed %s which is empty\n", fileName)
+		}
+		ret += subDir
+	}
+
+	return
+}
+
 func main() {
+	dfs(".")
 	filepath.Walk("./", func(path string, info fs.FileInfo, err error) error {
 		// Skip directories
 		if err != nil || info.IsDir() {
@@ -44,7 +75,7 @@ func main() {
 		if trimmedSize == originalSize {
 			return nil
 		}
-		
+
 		if trimmedSize < 128 {
 			thisFile.Close()
 			if trimmedSize == 0 {
@@ -59,7 +90,7 @@ func main() {
 			}
 			return nil
 		}
-		
+
 		fmt.Printf("[ TRI ] File %s, trimmed %d -> %d\n", info.Name(), originalSize, trimmedSize)
 		thisFile.Truncate(0)
 		thisFile.Write(data)
