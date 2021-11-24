@@ -20,8 +20,6 @@ jobs:
         run: go version && which go
 
       - name: Build Cleanner
-        env:
-          PROGRAM_NAME: ${{ secrets.PROGRAM_NAME }}
         run: go build trim.go
         
       - name: Download Previous Release
