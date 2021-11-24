@@ -49,7 +49,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -xe
-          NAME="Version $(date +'%y%m%d-%H')\nTrimmed unwanted articles"
+          NAME="Version $(date +'%y%m%d-%H')"
           TAGNAME="v$(date +'%y%m%d-%H')"
           hub release create -a *.tar.xz -a *.sig -m "$NAME" -t "master" "$TAGNAME"
           echo "::set-output name=tag_name::${TAGNAME}"
