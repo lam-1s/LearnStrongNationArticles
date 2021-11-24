@@ -40,7 +40,6 @@ func dfs(path string) (ret uint) {
 }
 
 func main() {
-	dfs(".")
 	filepath.Walk("./", func(path string, info fs.FileInfo, err error) error {
 		// Skip directories
 		if err != nil || info.IsDir() {
@@ -96,4 +95,5 @@ func main() {
 		thisFile.Write(data)
 		return nil
 	})
+	dfs(".")
 }
