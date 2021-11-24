@@ -54,6 +54,12 @@ jobs:
       - name: Fetch Articles
         run: cd Work && ../WORKER
         
+      - name: Build Cleanner
+        run: go build trim.go
+      
+      - name: Do Trimming
+        run: cd Work && ../trim
+      
       - name: Compress Articles
         run: cd Work && tar cJf ../release-`cat tag.txt`.tar.xz lastUpdated.json txt
         
