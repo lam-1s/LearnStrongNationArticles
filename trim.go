@@ -60,28 +60,27 @@ func main() {
 			return nil
 		}
 
-		thisFile, err := os.OpenFile(path, os.O_RDWR, 0644)
+		thisFileRead, err := os.OpenFile(path, os.O_RDONLY, 0644)
 		if err != nil {
 			fmt.Printf("[ERROR] %s\n", err.Error())
 			return err
 		}
-		defer thisFile.Close()
-		data, _ := ioutil.ReadAll(thisFile)
-		originalSize := len(data)
+		data, _ := ioutil.ReadAll(thisFileRead)
+		thisFileRead.Close()
+		
 		dataStr := string(data)
+		originalSize := len(dataStr)
 		dataStr = strings.ReplaceAll(dataStr, "&nbsp;", "")
 		dataStr = strings.ReplaceAll(dataStr, "\t", "")
 		dataStr = strings.ReplaceAll(dataStr, "\v", "")
 		dataStr = strings.ReplaceAll(dataStr, "\000", "")
 		dataStr = strings.ReplaceAll(dataStr, " ", "")
-		data = []byte(dataStr)
-		trimmedSize := len(data)
+		trimmedSize := len(dataStr)
 		if trimmedSize == originalSize {
 			return nil
 		}
 
 		if trimmedSize < 128 {
-			thisFile.Close()
 			if trimmedSize == 0 {
 				fmt.Printf("[EMPTY] Removed file %s which is empty\n", path)
 			} else {
@@ -94,10 +93,11 @@ func main() {
 			}
 			return nil
 		}
-
 		fmt.Printf("[ TRI ] File %s, trimmed %d -> %d\n", info.Name(), originalSize, trimmedSize)
-		thisFile.Truncate(0)
-		thisFile.Write(data)
+
+		thisFileWrite, err := os.OpenFile(path, os.O_WRONLY, 0644)
+		thisFileWrite.Truncate(0)
+		thisFileWrite.WriteString(dataStr)
 		return nil
 	})
 	dfs(".")
