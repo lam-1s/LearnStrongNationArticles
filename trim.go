@@ -73,9 +73,7 @@ func main() {
 		dataStr = strings.ReplaceAll(dataStr, "\t", "")
 		dataStr = strings.ReplaceAll(dataStr, "\v", "")
 		dataStr = strings.ReplaceAll(dataStr, "\000", "")
-		for strings.Index(dataStr, "  ") != -1{
-			dataStr = strings.ReplaceAll(dataStr, "  ", " ")
-		}
+		dataStr = strings.ReplaceAll(dataStr, " ", "")
 		data = []byte(dataStr)
 		trimmedSize := len(data)
 		if trimmedSize == originalSize {
